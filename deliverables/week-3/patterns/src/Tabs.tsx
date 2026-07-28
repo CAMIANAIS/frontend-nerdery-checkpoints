@@ -1,4 +1,4 @@
-import { createContext, useState, type ReactNode } from 'react'
+import { createContext, useContext, useState, type ReactNode } from 'react'
 
 // ---------------------------------------------------------------------------
 // STUB IMPLEMENTATION
@@ -20,9 +20,7 @@ interface TabsProps {
 }
 
 function TabsRoot({ defaultValue, children }: TabsProps) {
-  const [value] = useState(defaultValue)
-  // STUB: activation is not wired up yet.
-  const setValue = (_next: string): void => {}
+  const [value, setValue] = useState(defaultValue)
   return (
     <TabsContext.Provider value={{ value, setValue }}>
       {children}
@@ -43,10 +41,12 @@ interface TabProps {
   children: ReactNode
 }
 
-function Tab({ value: _value, children }: TabProps) {
-  // STUB: never selected, click does nothing.
+function Tab({ value: valueTab, children }: TabProps) {
+  const context = useContext(TabsContext)
+  if (!context) throw new Error('Tab must be used within Tabs')
+  const { value, setValue } = context
   return (
-    <button type="button" role="tab" aria-selected={false}>
+    <button type="button" role="tab" aria-selected={valueTab === value} onClick={() => setValue(valueTab)}>
       {children}
     </button>
   )
@@ -57,9 +57,11 @@ interface TabsPanelProps {
   children: ReactNode
 }
 
-function TabsPanel({ value: _value, children }: TabsPanelProps) {
-  // STUB: every panel is always rendered.
-  return <div role="tabpanel">{children}</div>
+function TabsPanel({ value: valuePanel, children }: TabsPanelProps) {
+  const context = useContext(TabsContext)
+  if (!context) throw new Error('TabPanel must be used within Tabs')
+  const { value } = context
+  return valuePanel === value ? <div role="tabpanel">{children}</div> : null
 }
 
 export const Tabs = Object.assign(TabsRoot, {
