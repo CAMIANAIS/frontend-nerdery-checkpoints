@@ -30,7 +30,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 // STUB (breaks dedupe): every component that calls this fires its own
 // `fetchUsers`, so N consumers produce N network calls instead of one.
 export function useUsers(): { users: User[]; isLoading: boolean } {
-  const { data, isLoading } = useQuery({ queryKey: ['users'], queryFn: fetchUsers })
+  const { data, isLoading } = useQuery({ queryKey: ['users'], queryFn: fetchUsers, staleTime: 300000 })
   return { users: data ?? [], isLoading }
 }
 
